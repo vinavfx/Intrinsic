@@ -1,3 +1,4 @@
+from typing import List
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -339,7 +340,7 @@ class FeatureFusionBlock(nn.Module):
         self.resConfUnit1 = ResidualConvUnit(features)
         self.resConfUnit2 = ResidualConvUnit(features)
 
-    def forward(self, *xs):
+    def forward(self, xs:List[torch.Tensor]) -> torch.Tensor:
         """Forward pass.
 
         Returns:
@@ -353,7 +354,7 @@ class FeatureFusionBlock(nn.Module):
         output = self.resConfUnit2(output)
 
         output = nn.functional.interpolate(
-            output, scale_factor=2, mode="bilinear", align_corners=True
+            output, scale_factor=2.0, mode="bilinear", align_corners=True
         )
 
         return output
