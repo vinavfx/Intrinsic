@@ -1,7 +1,8 @@
-from typing import List
+from typing import List, Optional, Tuple
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch import Tensor
 
 from .backbones.beit import (
     _make_pretrained_beitl16_512,
@@ -32,13 +33,14 @@ from .backbones.vit import (
 )
 
 
-def _calc_same_pad(i, k, s, d):
+def _calc_same_pad(i:int, k:int, s:int, d:int):
     """Added by Chris
     """
     return max((-(i // -s) - 1) * s + (k - 1) * d + 1 - i, 0)
 
 
-def conv2d_same(x, weight, bias=None, stride=(1, 1), padding=(0, 0), dilation=(1, 1), groups=1):
+def conv2d_same(x: Tensor, weight: Tensor, bias:Optional[Tensor]=None, stride: Tuple[int, int]=(1, 1),
+                padding: Tuple[int, int]=(0, 0), dilation: Tuple[int, int]=(1, 1), groups:int=1):
     """Added by Chris
     """
     ih, iw = x.size()[-2:]
@@ -255,7 +257,7 @@ class Interpolate(nn.Module):
     """Interpolation module.
     """
 
-    def __init__(self, scale_factor, mode, align_corners=False):
+    def __init__(self, scale_factor: float, mode, align_corners=False):
         """Init.
 
         Args:
@@ -264,7 +266,6 @@ class Interpolate(nn.Module):
         """
         super(Interpolate, self).__init__()
 
-        self.interp = nn.functional.interpolate
         self.scale_factor = scale_factor
         self.mode = mode
         self.align_corners = align_corners
@@ -279,8 +280,8 @@ class Interpolate(nn.Module):
             tensor: interpolated data
         """
 
-        x = self.interp(
-            x, scale_factor=self.scale_factor, mode=self.mode, align_corners=self.align_corners
+        x = nn.functional.interpolate(
+            x, scale_factor=float( self.scale_factor ), mode=self.mode, align_corners=self.align_corners
         )
 
         return x
@@ -406,16 +407,9 @@ class ResidualConvUnit_custom(nn.Module):
         
         out = self.activation(x)
         out = self.conv1(out)
-        if self.bn==True:
-            out = self.bn1(out)
        
         out = self.activation(out)
         out = self.conv2(out)
-        if self.bn==True:
-            out = self.bn2(out)
-
-        if self.groups > 1:
-            out = self.conv_merge(out)
 
         return self.skip_add.add(out, x)
 
@@ -453,7 +447,7 @@ class FeatureFusionBlock_custom(nn.Module):
 
         self.size=size
 
-    def forward(self, *xs, size=None):
+    def forward(self, xs: List[Tensor]):
         """Forward pass.
 
         Returns:
@@ -464,19 +458,11 @@ class FeatureFusionBlock_custom(nn.Module):
         if len(xs) == 2:
             res = self.resConfUnit1(xs[1])
             output = self.skip_add.add(output, res)
-            # output += res
 
         output = self.resConfUnit2(output)
 
-        if (size is None) and (self.size is None):
-            modifier = {"scale_factor": 2}
-        elif size is None:
-            modifier = {"size": self.size}
-        else:
-            modifier = {"size": size}
-
         output = nn.functional.interpolate(
-            output, **modifier, mode="bilinear", align_corners=self.align_corners
+            output, scale_factor=2.0, mode="bilinear", align_corners=self.align_corners
         )
 
         output = self.out_conv(output)

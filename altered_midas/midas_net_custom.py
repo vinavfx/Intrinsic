@@ -46,7 +46,7 @@ class MidasNet_small(BaseModel):
 
         self.pretrained, self.scratch = _make_encoder(self.backbone, features, pretrained, in_chan=input_channels, groups=self.groups, expand=self.expand, exportable=exportable)
   
-        self.scratch.activation = nn.ReLU(False)    
+        self.scratch.activation = nn.ReLU(False)
 
         self.scratch.refinenet4 = FeatureFusionBlock_custom(features4, self.scratch.activation, deconv=False, bn=False, expand=self.expand, align_corners=align_corners)
         self.scratch.refinenet3 = FeatureFusionBlock_custom(features3, self.scratch.activation, deconv=False, bn=False, expand=self.expand, align_corners=align_corners)
@@ -95,12 +95,11 @@ class MidasNet_small(BaseModel):
         layer_3_rn = self.scratch.layer3_rn(layer_3)
         layer_4_rn = self.scratch.layer4_rn(layer_4)
 
+        path_4 = self.scratch.refinenet4([layer_4_rn])
+        path_3 = self.scratch.refinenet3([path_4, layer_3_rn])
+        path_2 = self.scratch.refinenet2([path_3, layer_2_rn])
+        path_1 = self.scratch.refinenet1([path_2, layer_1_rn])
 
-        path_4 = self.scratch.refinenet4(layer_4_rn)
-        path_3 = self.scratch.refinenet3(path_4, layer_3_rn)
-        path_2 = self.scratch.refinenet2(path_3, layer_2_rn)
-        path_1 = self.scratch.refinenet1(path_2, layer_1_rn)
-        
         out = self.scratch.output_conv(path_1)
 
         # if self.out_chan == 1:
