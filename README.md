@@ -66,13 +66,12 @@ cd ./Intrinsic-for-Nuke
 
 conda create -n intrinsic python=3.9
 conda activate intrinsic
-pip install -r requirements.txt
+pip install .
 
+wget https://github.com/compphoto/Intrinsic/releases/download/v1.0/final_weights.pt
 python ./intrinsic_nuke.py
 # Convert with CatFileCreator.nk
 ````
-
-
 
 ## Citation
 
