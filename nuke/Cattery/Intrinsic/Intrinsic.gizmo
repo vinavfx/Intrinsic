@@ -3,6 +3,12 @@ version 15.0 v4
 Gizmo {
  onCreate "def exe(func, *args):\n    allowed_knobs = \['Boolean_Knob', 'PyScript_Knob']\n    exclude_knobs = \['selected']\n\n    knob = nuke.thisKnob()\n    allowed_knob = knob.Class() in allowed_knobs and not knob.name() in exclude_knobs\n\n    try:\n        return eval(func)(*args)\n    except Exception as e:\n\n        if not allowed_knob:\n            return\n\n        if not 'vina' in str(e):\n            return\n\n        message = 'ask <b>Francisco Contreras</b> for the script <b>\"\{\}\"</b>, since the script for this method is not embedded in the node. Thank you.'.format(\n            func)\n        nuke.message(message)\n"
  addUserKnob {20 controls l Controls}
+ addUserKnob {26 "" l "Local GPU:" T ""}
+ addUserKnob {26 gpuName l "" -STARTLINE T "NVIDIA GeForce RTX 3060"}
+ addUserKnob {41 useGPUIfAvailable l "Use GPU if available" T RES_COMBINED.useGPUIfAvailable}
+ addUserKnob {26 ""}
+ addUserKnob {41 contrast l "Pre Contrast" T pre_contrast.contrast}
+ addUserKnob {41 shader_output l "Shader Output" t "Channel through which the shader will come out, so that it can later be combined with the albedo." T Copy3.to0}
  addUserKnob {20 about l About}
  addUserKnob {26 _name l "" +STARTLINE T "<b>Intrinsic</b> v1.0<br><br><b>Francisco Contreras</b> - Senior Compositor<br><a href=\"http://vinavfx.com\"><span style=\"color:#C8C8C8;\">vinavfx.com</span></a>"}
  addUserKnob {26 ""}
@@ -13,78 +19,106 @@ Gizmo {
   tile_color 0x467d9c01
   label "<font face=\"Bitstream Vera Sans\" size=4>ALBEDO</font>"
   note_font_size 20
-  xpos 353
-  ypos 570
-  bdwidth 240
-  bdheight 231
+  xpos 358
+  ypos 599
+  bdwidth 234
+  bdheight 187
   addUserKnob {20 "Setup Tools" +INVISIBLE}
   addUserKnob {1 data l Data}
   data "\{\"color_code\": \"c2\"\}"
  }
- StickyNote {
+ BackdropNode {
   inputs 0
-  name StickyNote1
-  label "No conversion to sRGB is required as \nthe model requires a linear input !"
-  xpos 387
-  ypos -48
+  name SHADER_BD
+  tile_color 0x275b8201
+  label "<font face=\"Bitstream Vera Sans\" size=4>SHADER</font>"
+  note_font_size 20
+  xpos 33
+  ypos 929
+  bdwidth 206
+  bdheight 169
+  addUserKnob {20 "Setup Tools" +INVISIBLE}
+  addUserKnob {1 data l Data}
+  data "\{\"color_code\": \"c1\"\}"
  }
  Input {
   inputs 0
   name Input
-  xpos 437
+  xpos 438
+  ypos -319
+ }
+ AddChannels {
+  channels rgba
+  name AddChannels1
+  xpos 438
+  ypos -171
+ }
+ Crop {
+  box {0 0 {input.width} {input.height}}
+  crop false
+  name crop
+  xpos 438
   ypos -141
  }
- Grade {
-  white 0.98
-  name Grade6
-  xpos 437
-  ypos -115
-  disable true
+set N219a5740 [stack 0]
+ Dot {
+  name Dot6
+  xpos 118
+  ypos -137
+ }
+ Dot {
+  name Dot7
+  xpos 118
+  ypos 863
+ }
+set N21acba10 [stack 0]
+push $N219a5740
+ ColorCorrect {
+  lookup {shadow {}
+    midtone {}
+    highlight {curve x-0.01243902743 0 s0 x1 1 s0}}
+  name pre_contrast
+  xpos 438
+  ypos -54
  }
  Dot {
   name Dot1
-  xpos 471
+  xpos 472
   ypos 67
  }
-set N22ead9e0 [stack 0]
+set N219d6630 [stack 0]
  Dot {
   name Dot5
   xpos 639
   ypos 67
  }
-set N977b96e0 [stack 0]
+set N219dc040 [stack 0]
  Dot {
-  name Dot2
-  xpos 770
+  name Dot4
+  xpos 731
   ypos 67
  }
  Dot {
-  name Dot4
-  xpos 770
-  ypos 681
+  name Dot8
+  xpos 731
+  ypos 641
  }
-set N5c20eea0 [stack 0]
- Dot {
-  name Dot6
-  xpos 770
-  ypos 947
- }
-push $N5c20eea0
-push $N22ead9e0
+push $N219d6630
  Dot {
   name Dot3
-  xpos 266
+  xpos 267
   ypos 67
  }
  Inference {
+  useGPUIfAvailable {{parent.RES_COMBINED.useGPUIfAvailable}}
   modelFile "\[lsearch -inline \[plugins -all ORDINAL.cat] *.cat]"
   serialiseKnob {}
   name HIRES_ORDINAL
   tile_color 0x66b253ff
-  xpos 232
+  xpos 233
   ypos 297
  }
-push $N977b96e0
+push $N219dc040
  Reformat {
   type "to box"
   box_width 384
@@ -97,6 +131,7 @@ push $N977b96e0
   ypos 144
  }
  Inference {
+  useGPUIfAvailable {{parent.RES_COMBINED.useGPUIfAvailable}}
   modelFile "\[lsearch -inline \[plugins -all ORDINAL.cat] *.cat]"
   serialiseKnob {}
   name LOWRES_ORDINAL
@@ -115,7 +150,7 @@ push $N977b96e0
   xpos 605
   ypos 223
  }
-push $N22ead9e0
+push $N219d6630
  Copy {
   inputs 2
   from0 rgba.red
@@ -138,7 +173,7 @@ push $N22ead9e0
   name RES_COMBINED
   tile_color 0xd1b03cff
   xpos 438
-  ypos 382
+  ypos 383
  }
  Colorspace {
   colorspace_in sRGB
@@ -159,26 +194,60 @@ push $N22ead9e0
   operation multiply
   name Merge5
   xpos 438
-  ypos 677
+  ypos 637
+ }
+ ColorCorrect {
+  contrast {{"1 / parent.pre_contrast.contrast"}}
+  lookup {shadow {}
+    midtone {}
+    highlight {curve x-0.01243902743 0 s0 x1 1 s0}}
+  name reverse_contrast
+  xpos 438
+  ypos 690
  }
  Multiply {
   channels rgba
   value 4
   name x4
   xpos 438
-  ypos 703
+  ypos 740
  }
+set N21aa78b0 [stack 0]
  Merge2 {
   inputs 2
   operation divide
   name Merge1
+  xpos 84
+  ypos 1029
+ }
+push $N21acba10
+push $N21aa78b0
+ Copy {
+  inputs 2
+  from0 rgba.alpha
+  to0 rgba.alpha
+  name Copy4
   xpos 438
-  ypos 943
-  disable true
+  ypos 853
+ }
+ Copy {
+  inputs 2
+  from0 rgba.red
+  to0 rgba.alpha
+  name Copy3
+  xpos 438
+  ypos 1023
  }
  Output {
   name Output1
   xpos 438
-  ypos 1057
+  ypos 1169
+ }
+ StickyNote {
+  inputs 0
+  name StickyNote1
+  label "No conversion to sRGB is required as \nthe model requires a linear input !"
+  xpos 385
+  ypos -259
  }
 end_group

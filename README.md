@@ -1,5 +1,8 @@
+# Intrinsic for Nuke
+Ported to Nuke [![ported](https://img.shields.io/badge/by:_Francisco_Contreras-blue?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/francisco-contreras-cuevas/)
+
 # Intrinsic Image Decomposition via Ordinal Shading
-Code for the paper: Intrinsic Image Decomposition via Ordinal Shading, [Chris Careaga](https://ccareaga.github.io/) and [Yağız Aksoy](https://yaksoy.github.io), ACM Transactions on Graphics, 2023 
+Code for the paper: Intrinsic Image Decomposition via Ordinal Shading, [Chris Careaga](https://ccareaga.github.io/) and [Yağız Aksoy](https://yaksoy.github.io), ACM Transactions on Graphics, 2023
 ### [Project Page](https://yaksoy.github.io/intrinsic) | [Paper](https://yaksoy.github.io/papers/TOG23-Intrinsic.pdf) | [Video](https://www.youtube.com/watch?v=pWtJd3hqL3c) | [Supplementary](https://yaksoy.github.io/papers/TOG23-Intrinsic-Supp.pdf) | [Data](https://github.com/compphoto/MIDIntrinsics)
 
 We propose a method for generating high-resolution intrinsic image decompositions, for in-the-wild images. Our method relies on a carefully formulated ordinal shading representation, and real-world supervision from multi-illumination data in order to predict highly accurate albedo and shading. 
@@ -51,54 +54,25 @@ Our method can be used for complex image editing tasks such as recoloring and re
 ![yellow_chair](./figures/yellow_chair.png)
 
 
-## Setup
-Depending on how you would like to use the code in this repository there are two options to setup the code.
-In either case, you should first create a fresh virtual environment (`python3 -m venv intrinsic_env`) and start it (`source intrinsic_env/bin/activate`)
+## Installation
+1. Download and unzip the latest release from [here](https://drive.google.com/file/d/19k_gNaB2jC4i0Uz3dILBgUQCkrjALez-/view?usp=sharing).
+2. Copy the extracted Cattery folder to .nuke or your plugins path.
 
-You can install this repository as a package using `pip`:
-```
-git clone https://github.com/compphoto/Intrinsic
-cd Intrinsic
-pip install .
-```
-If you want to make changes to the code and have it reflected when you import the package use `pip install --editable`
-Or perform the same action without cloning the code using:
-```
-pip install https://github.com/compphoto/Intrinsic/archive/main.zip
-```
-This will allow you to import the repository as a Python package, and use our pipeline as part of your codebase.
+## Compile
+```sh
+# Linux
+git clone https://github.com/vinavfx/Intrinsic-for-Nuke.git
+cd ./Intrinsic-for-Nuke
 
-## Inference
-To run our pipeline on your own images you can use the decompose script:
-```python
-from chrislib.general import view, tile_imgs, view_scale, uninvert
-from chrislib.data_util import load_image
+conda create -n intrinsic python=3.9
+conda activate intrinsic
+pip install -r requirements.txt
 
-from intrinsic.pipeline import run_pipeline
-from intrinsic.model_util import load_models
+python ./intrinsic_nuke.py
+# Convert with CatFileCreator.nk
+````
 
-# load the models from the given paths
-models = load_models('final_weights.pt')
 
-# load an image (np float array in [0-1])
-image = load_image('/path/to/input/image')
-
-# run the model on the image using R_0 resizing
-results = run_pipeline(
-    models,
-    image,
-    resize_conf=0.0,
-    maintain_size=True
-)
-
-albedo = results['albedo']
-inv_shd = results['inv_shading']
-
-# compute shading from inverse shading
-shading = uninvert(inv_shd)
-
-```
-This will run our pipeline and output the linear albedo and shading. You can run this in your browser as well! [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/compphoto/Intrinsic/blob/main/intrinsic_inference.ipynb)
 
 ## Citation
 

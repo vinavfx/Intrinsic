@@ -1,0 +1,30 @@
+set cut_paste_input [stack 0]
+version 15.0 v4
+CatFileCreator {
+ inputs 0
+ torchScriptFile nuke/Cattery/Intrinsic/ORDINAL.pt
+ catFile nuke/Cattery/Intrinsic/ORDINAL.cat
+ channelsIn rgba.red,rgba.green,rgba.blue
+ channelsOut rgba.red
+ modelId ordinal
+ name ORDINAL_CAT
+ selected true
+ xpos 1454
+ ypos 22
+ postage_stamp false
+ addUserKnob {20 User}
+}
+CatFileCreator {
+ inputs 0
+ torchScriptFile nuke/Cattery/Intrinsic/COMBINE.pt
+ catFile nuke/Cattery/Intrinsic/COMBINE.cat
+ channelsIn "rgba.red,rgba.green,rgba.blue, forward.u,forward.v"
+ channelsOut rgba.red
+ modelId combine
+ name COMBINE_CAT
+ selected true
+ xpos 1454
+ ypos 57
+ postage_stamp false
+ addUserKnob {20 User}
+}
