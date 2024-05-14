@@ -1,0 +1,184 @@
+#! /opt/Nuke15.0v4/libnuke-15.0.4.so -nx
+version 15.0 v4
+Gizmo {
+ onCreate "def exe(func, *args):\n    allowed_knobs = \['Boolean_Knob', 'PyScript_Knob']\n    exclude_knobs = \['selected']\n\n    knob = nuke.thisKnob()\n    allowed_knob = knob.Class() in allowed_knobs and not knob.name() in exclude_knobs\n\n    try:\n        return eval(func)(*args)\n    except Exception as e:\n\n        if not allowed_knob:\n            return\n\n        if not 'vina' in str(e):\n            return\n\n        message = 'ask <b>Francisco Contreras</b> for the script <b>\"\{\}\"</b>, since the script for this method is not embedded in the node. Thank you.'.format(\n            func)\n        nuke.message(message)\n"
+ addUserKnob {20 controls l Controls}
+ addUserKnob {20 about l About}
+ addUserKnob {26 _name l "" +STARTLINE T "<b>Intrinsic</b> v1.0<br><br><b>Francisco Contreras</b> - Senior Compositor<br><a href=\"http://vinavfx.com\"><span style=\"color:#C8C8C8;\">vinavfx.com</span></a>"}
+ addUserKnob {26 ""}
+}
+ BackdropNode {
+  inputs 0
+  name ALBEDO_BD
+  tile_color 0x467d9c01
+  label "<font face=\"Bitstream Vera Sans\" size=4>ALBEDO</font>"
+  note_font_size 20
+  xpos 353
+  ypos 570
+  bdwidth 240
+  bdheight 231
+  addUserKnob {20 "Setup Tools" +INVISIBLE}
+  addUserKnob {1 data l Data}
+  data "\{\"color_code\": \"c2\"\}"
+ }
+ StickyNote {
+  inputs 0
+  name StickyNote1
+  label "No conversion to sRGB is required as \nthe model requires a linear input !"
+  xpos 387
+  ypos -48
+ }
+ Input {
+  inputs 0
+  name Input
+  xpos 437
+  ypos -141
+ }
+ Grade {
+  white 0.98
+  name Grade6
+  xpos 437
+  ypos -115
+  disable true
+ }
+ Dot {
+  name Dot1
+  xpos 471
+  ypos 67
+ }
+set N22ead9e0 [stack 0]
+ Dot {
+  name Dot5
+  xpos 639
+  ypos 67
+ }
+set N977b96e0 [stack 0]
+ Dot {
+  name Dot2
+  xpos 770
+  ypos 67
+ }
+ Dot {
+  name Dot4
+  xpos 770
+  ypos 681
+ }
+set N5c20eea0 [stack 0]
+ Dot {
+  name Dot6
+  xpos 770
+  ypos 947
+ }
+push $N5c20eea0
+push $N22ead9e0
+ Dot {
+  name Dot3
+  xpos 266
+  ypos 67
+ }
+ Inference {
+  modelFile "\[lsearch -inline \[plugins -all ORDINAL.cat] *.cat]"
+  serialiseKnob {}
+  name HIRES_ORDINAL
+  tile_color 0x66b253ff
+  xpos 232
+  ypos 297
+ }
+push $N977b96e0
+ Reformat {
+  type "to box"
+  box_width 384
+  box_height {{box_width}}
+  box_fixed true
+  scale {1 1}
+  resize distort
+  name to_low_res
+  xpos 605
+  ypos 144
+ }
+ Inference {
+  modelFile "\[lsearch -inline \[plugins -all ORDINAL.cat] *.cat]"
+  serialiseKnob {}
+  name LOWRES_ORDINAL
+  tile_color 0x66b253ff
+  xpos 605
+  ypos 182
+ }
+ Reformat {
+  type "to box"
+  format "1504 1152 0 0 1504 1152 1 "
+  box_width {{Input.width}}
+  box_height {{Input.height}}
+  resize distort
+  filter notch
+  name restore_format
+  xpos 605
+  ypos 223
+ }
+push $N22ead9e0
+ Copy {
+  inputs 2
+  from0 rgba.red
+  to0 forward.u
+  name Copy2
+  xpos 438
+  ypos 217
+ }
+ Copy {
+  inputs 2
+  from0 rgba.red
+  to0 forward.v
+  name Copy1
+  xpos 438
+  ypos 291
+ }
+ Inference {
+  modelFile "\[lsearch -inline \[plugins -all COMBINE.cat] *.cat]"
+  serialiseKnob {}
+  name RES_COMBINED
+  tile_color 0xd1b03cff
+  xpos 438
+  ypos 382
+ }
+ Colorspace {
+  colorspace_in sRGB
+  name sRGB2Linear
+  xpos 438
+  ypos 454
+ }
+ Shuffle2 {
+  fromInput1 {{0} B}
+  fromInput2 {{0} B}
+  mappings "4 rgba.red 0 0 rgba.red 0 0 rgba.red 0 0 rgba.green 0 1 rgba.red 0 0 rgba.blue 0 2 rgba.red 0 0 rgba.alpha 0 3"
+  name Shuffle2
+  xpos 438
+  ypos 480
+ }
+ Merge2 {
+  inputs 2
+  operation multiply
+  name Merge5
+  xpos 438
+  ypos 677
+ }
+ Multiply {
+  channels rgba
+  value 4
+  name x4
+  xpos 438
+  ypos 703
+ }
+ Merge2 {
+  inputs 2
+  operation divide
+  name Merge1
+  xpos 438
+  ypos 943
+  disable true
+ }
+ Output {
+  name Output1
+  xpos 438
+  ypos 1057
+ }
+end_group

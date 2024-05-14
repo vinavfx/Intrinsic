@@ -1,0 +1,13 @@
+{
+    "minimum_nuke_version_required": 13.2,
+    "version": 1,
+    "category": "Map",
+    "description": "Intrinsic - https://github.com/vinavfx/Intrinsic",
+    "cats": [
+        {
+            "filepath": "Intrinsic.gizmo",
+            "name": "Intrinsic",
+            "icon": "Intrinsic.png"
+        }
+    ]
+}
