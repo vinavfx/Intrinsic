@@ -1,5 +1,9 @@
 # Intrinsic for Nuke
 Ported to Nuke [![ported](https://img.shields.io/badge/by:_Francisco_Contreras-blue?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/francisco-contreras-cuevas/)
+#### Limitations:
+1. It works very poorly for movement since it blinking too much.
+2. It works poorly for very strong intensities and very marked shadows like that of the sun.
+
 
 # Intrinsic Image Decomposition via Ordinal Shading
 Code for the paper: Intrinsic Image Decomposition via Ordinal Shading, [Chris Careaga](https://ccareaga.github.io/) and [Yağız Aksoy](https://yaksoy.github.io), ACM Transactions on Graphics, 2023
