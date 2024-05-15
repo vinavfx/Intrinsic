@@ -8,9 +8,9 @@ weights = './final_weights.pt'
 class combine(torch.nn.Module):
     def __init__(self):
         super().__init__()
-        device = 'cuda'
+        device = 'cpu'
 
-        combined_dict = torch.load(weights)
+        combined_dict = torch.load(weights, map_location=torch.device(device))
         iid_state_dict = combined_dict['iid_state_dict']
 
         self.real_model = MidasNet_small(
@@ -25,9 +25,9 @@ class combine(torch.nn.Module):
 class ordinal(torch.nn.Module):
     def __init__(self):
         super().__init__()
-        device = 'cuda'
+        device = 'cpu'
 
-        combined_dict = torch.load(weights)
+        combined_dict = torch.load(weights, map_location=torch.device(device))
         ord_state_dict = combined_dict['ord_state_dict']
 
         self.ord_model = MidasNet()

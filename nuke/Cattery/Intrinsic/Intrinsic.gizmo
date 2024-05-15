@@ -31,10 +31,10 @@ Gizmo {
   tile_color 0x275b8201
   label "<font face=\"Bitstream Vera Sans\" size=4>SHADER</font>"
   note_font_size 20
-  xpos 33
-  ypos 929
-  bdwidth 206
-  bdheight 169
+  xpos 18
+  ypos 931
+  bdwidth 221
+  bdheight 175
   addUserKnob {20 "Setup Tools" +INVISIBLE}
   addUserKnob {1 data l Data}
   data "\{\"color_code\": \"c1\"\}"
@@ -58,7 +58,7 @@ Gizmo {
   xpos 438
   ypos -141
  }
-set N1e51e630 [stack 0]
+set N1decf870 [stack 0]
  Dot {
   name Dot6
   xpos 118
@@ -73,28 +73,29 @@ set N1e51e630 [stack 0]
   channel3 none
   name black_clamp
   xpos 84
-  ypos 601
+  ypos 686
  }
- Dot {
-  name Dot2
-  xpos 118
-  ypos 690
- }
-set N7e70510 [stack 0]
+set N1dedf520 [stack 0]
  Dot {
   name Dot7
   xpos 118
   ypos 863
  }
-set N1e52e2e0 [stack 0]
-push $N7e70510
-push $N1e51e630
+set N1deedbd0 [stack 0]
+push $N1dedf520
+ Colorspace {
+  colorspace_out sRGB
+  name lin2sRGB
+  xpos 231
+  ypos 686
+ }
+push $N1decf870
  Dot {
   name Dot1
   xpos 472
   ypos 67
  }
-set N1e54cbc0 [stack 0]
+set N1df0c9a0 [stack 0]
  Dot {
   name Dot3
   xpos 267
@@ -109,7 +110,7 @@ set N1e54cbc0 [stack 0]
   xpos 233
   ypos 297
  }
-push $N1e54cbc0
+push $N1df0c9a0
  Dot {
   name Dot5
   xpos 639
@@ -146,7 +147,7 @@ push $N1e54cbc0
   xpos 605
   ypos 223
  }
-push $N1e54cbc0
+push $N1df0c9a0
  Copy {
   inputs 2
   from0 rgba.red
@@ -171,11 +172,17 @@ push $N1e54cbc0
   xpos 438
   ypos 383
  }
- Colorspace {
-  colorspace_in sRGB
-  name sRGB2Linear
+ Expression {
+  expr0 "(1.0 / r) - 1.0"
+  name inv_shd
   xpos 438
-  ypos 454
+  ypos 456
+ }
+ Colorspace {
+  colorspace_out sRGB
+  name lin2sRGB1
+  xpos 438
+  ypos 502
  }
  Shuffle2 {
   fromInput1 {{0} B}
@@ -183,23 +190,22 @@ push $N1e54cbc0
   mappings "4 rgba.red 0 0 rgba.red 0 0 rgba.red 0 0 rgba.green 0 1 rgba.red 0 0 rgba.blue 0 2 rgba.red 0 0 rgba.alpha 0 3"
   name Shuffle2
   xpos 438
-  ypos 480
+  ypos 547
  }
  Merge2 {
   inputs 2
-  operation multiply
+  operation divide
   name Merge5
   xpos 438
   ypos 686
  }
- Multiply {
-  channels rgba
-  value 4
-  name x4
+ Colorspace {
+  colorspace_in sRGB
+  name sRGB2lin
   xpos 438
-  ypos 740
+  ypos 730
  }
-set N1e618840 [stack 0]
+set N21dc18d0 [stack 0]
  Merge2 {
   inputs 2
   operation divide
@@ -207,8 +213,14 @@ set N1e618840 [stack 0]
   xpos 84
   ypos 1029
  }
-push $N1e52e2e0
-push $N1e618840
+ Saturation {
+  saturation 0
+  name Saturation1
+  xpos 84
+  ypos 1055
+ }
+push $N1deedbd0
+push $N21dc18d0
  Copy {
   inputs 2
   from0 rgba.alpha
@@ -223,7 +235,7 @@ push $N1e618840
   to0 rgba.alpha
   name Copy3
   xpos 438
-  ypos 1023
+  ypos 1049
  }
  Output {
   name Output1
