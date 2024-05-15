@@ -1,13 +1,11 @@
-#! /opt/Nuke15.0v4/libnuke-15.0.4.so -nx
-version 15.0 v4
+#! /opt/Nuke14.0v7/libnuke-14.0.7.so -nx
+version 14.0 v7
 Gizmo {
  onCreate "def exe(func, *args):\n    allowed_knobs = \['Boolean_Knob', 'PyScript_Knob']\n    exclude_knobs = \['selected']\n\n    knob = nuke.thisKnob()\n    allowed_knob = knob.Class() in allowed_knobs and not knob.name() in exclude_knobs\n\n    try:\n        return eval(func)(*args)\n    except Exception as e:\n\n        if not allowed_knob:\n            return\n\n        if not 'vina' in str(e):\n            return\n\n        message = 'ask <b>Francisco Contreras</b> for the script <b>\"\{\}\"</b>, since the script for this method is not embedded in the node. Thank you.'.format(\n            func)\n        nuke.message(message)\n"
  addUserKnob {20 controls l Controls}
  addUserKnob {26 "" l "Local GPU:" T ""}
- addUserKnob {26 gpuName l "" -STARTLINE T "NVIDIA GeForce RTX 3060"}
- addUserKnob {41 useGPUIfAvailable l "Use GPU if available" T RES_COMBINED.useGPUIfAvailable}
+ addUserKnob {41 useGPUIfAvailable l "Use GPU if available" -STARTLINE T RES_COMBINED.useGPUIfAvailable}
  addUserKnob {26 ""}
- addUserKnob {41 contrast l "Pre Contrast" T pre_contrast.contrast}
  addUserKnob {41 shader_output l "Shader Output" t "Channel through which the shader will come out, so that it can later be combined with the albedo." T Copy3.to0}
  addUserKnob {20 about l About}
  addUserKnob {26 _name l "" +STARTLINE T "<b>Intrinsic</b> v1.0<br><br><b>Francisco Contreras</b> - Senior Compositor<br><a href=\"http://vinavfx.com\"><span style=\"color:#C8C8C8;\">vinavfx.com</span></a>"}
@@ -60,50 +58,43 @@ Gizmo {
   xpos 438
   ypos -141
  }
-set N219a5740 [stack 0]
+set N1e51e630 [stack 0]
  Dot {
   name Dot6
   xpos 118
   ypos -137
  }
+ Expression {
+  temp_name0 min
+  temp_expr0 0.00000001
+  expr0 "clamp(r, min, inf)"
+  expr1 "clamp(g, min, inf)"
+  expr2 "clamp(b, min, inf)"
+  channel3 none
+  name black_clamp
+  xpos 84
+  ypos 601
+ }
+ Dot {
+  name Dot2
+  xpos 118
+  ypos 690
+ }
+set N7e70510 [stack 0]
  Dot {
   name Dot7
   xpos 118
   ypos 863
  }
-set N21acba10 [stack 0]
-push $N219a5740
- ColorCorrect {
-  lookup {shadow {}
-    midtone {}
-    highlight {curve x-0.01243902743 0 s0 x1 1 s0}}
-  name pre_contrast
-  xpos 438
-  ypos -54
- }
+set N1e52e2e0 [stack 0]
+push $N7e70510
+push $N1e51e630
  Dot {
   name Dot1
   xpos 472
   ypos 67
  }
-set N219d6630 [stack 0]
- Dot {
-  name Dot5
-  xpos 639
-  ypos 67
- }
-set N219dc040 [stack 0]
- Dot {
-  name Dot4
-  xpos 731
-  ypos 67
- }
- Dot {
-  name Dot8
-  xpos 731
-  ypos 641
- }
-push $N219d6630
+set N1e54cbc0 [stack 0]
  Dot {
   name Dot3
   xpos 267
@@ -118,7 +109,12 @@ push $N219d6630
   xpos 233
   ypos 297
  }
-push $N219dc040
+push $N1e54cbc0
+ Dot {
+  name Dot5
+  xpos 639
+  ypos 67
+ }
  Reformat {
   type "to box"
   box_width 384
@@ -150,7 +146,7 @@ push $N219dc040
   xpos 605
   ypos 223
  }
-push $N219d6630
+push $N1e54cbc0
  Copy {
   inputs 2
   from0 rgba.red
@@ -194,16 +190,7 @@ push $N219d6630
   operation multiply
   name Merge5
   xpos 438
-  ypos 637
- }
- ColorCorrect {
-  contrast {{"1 / parent.pre_contrast.contrast"}}
-  lookup {shadow {}
-    midtone {}
-    highlight {curve x-0.01243902743 0 s0 x1 1 s0}}
-  name reverse_contrast
-  xpos 438
-  ypos 690
+  ypos 686
  }
  Multiply {
   channels rgba
@@ -212,7 +199,7 @@ push $N219d6630
   xpos 438
   ypos 740
  }
-set N21aa78b0 [stack 0]
+set N1e618840 [stack 0]
  Merge2 {
   inputs 2
   operation divide
@@ -220,8 +207,8 @@ set N21aa78b0 [stack 0]
   xpos 84
   ypos 1029
  }
-push $N21acba10
-push $N21aa78b0
+push $N1e52e2e0
+push $N1e618840
  Copy {
   inputs 2
   from0 rgba.alpha
