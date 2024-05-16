@@ -59,7 +59,7 @@ Our method can be used for complex image editing tasks such as recoloring and re
 
 
 ## Installation
-1. Download and unzip the latest release from [here](https://drive.google.com/file/d/19k_gNaB2jC4i0Uz3dILBgUQCkrjALez-/view?usp=sharing).
+1. Download and unzip the latest release from [here](https://drive.google.com/file/d/1NXzWSENM20l2-52ewesyZQoQhvRXw0XC/view?usp=sharing).
 2. Copy the extracted Cattery folder to .nuke or your plugins path.
 
 ## Compile

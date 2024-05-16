@@ -8,7 +8,7 @@ Gizmo {
  addUserKnob {26 ""}
  addUserKnob {41 shader_output l "Shader Output" t "Channel through which the shader will come out, so that it can later be combined with the albedo." T Copy3.to0}
  addUserKnob {20 about l About}
- addUserKnob {26 _name l "" +STARTLINE T "<b>Intrinsic</b> v1.0<br><br><b>Francisco Contreras</b> - Senior Compositor<br><a href=\"http://vinavfx.com\"><span style=\"color:#C8C8C8;\">vinavfx.com</span></a>"}
+ addUserKnob {26 _name l "" +STARTLINE T "<b>Intrinsic</b> v1.1<br><br><b>Francisco Contreras</b> - Senior Compositor<br><a href=\"http://vinavfx.com\"><span style=\"color:#C8C8C8;\">vinavfx.com</span></a>"}
  addUserKnob {26 ""}
 }
  BackdropNode {
@@ -49,20 +49,13 @@ Gizmo {
   channels rgba
   name AddChannels1
   xpos 438
-  ypos -171
+  ypos -170
  }
- Crop {
-  box {0 0 {input.width} {input.height}}
-  crop false
-  name crop
-  xpos 438
-  ypos -141
- }
-set N1decf870 [stack 0]
+set N1c89be30 [stack 0]
  Dot {
   name Dot6
   xpos 118
-  ypos -137
+  ypos -166
  }
  Expression {
   temp_name0 min
@@ -75,27 +68,46 @@ set N1decf870 [stack 0]
   xpos 84
   ypos 686
  }
-set N1dedf520 [stack 0]
+set N6e321a00 [stack 0]
  Dot {
   name Dot7
   xpos 118
   ypos 863
  }
-set N1deedbd0 [stack 0]
-push $N1dedf520
+set N75b6e280 [stack 0]
+push $N6e321a00
  Colorspace {
   colorspace_out sRGB
   name lin2sRGB
   xpos 231
   ypos 686
  }
-push $N1decf870
+push $N1c89be30
+ Reformat {
+  type "to box"
+  box_width {{"ceil(input0.width / 32) * 32"}}
+  box_height {{"ceil(input0.height / 32) * 32"}}
+  box_fixed true
+  resize none
+  center false
+  name res_optimal
+  selected true
+  xpos 438
+  ypos -84
+ }
+ Crop {
+  box {0 0 {input.width} {input.height}}
+  crop false
+  name crop
+  xpos 438
+  ypos -47
+ }
  Dot {
   name Dot1
   xpos 472
   ypos 67
  }
-set N1df0c9a0 [stack 0]
+set N1c7fa860 [stack 0]
  Dot {
   name Dot3
   xpos 267
@@ -110,7 +122,7 @@ set N1df0c9a0 [stack 0]
   xpos 233
   ypos 297
  }
-push $N1df0c9a0
+push $N1c7fa860
  Dot {
   name Dot5
   xpos 639
@@ -139,15 +151,15 @@ push $N1df0c9a0
  Reformat {
   type "to box"
   format "1504 1152 0 0 1504 1152 1 "
-  box_width {{Input.width}}
-  box_height {{Input.height}}
+  box_width {{res_optimal.width}}
+  box_height {{res_optimal.height}}
   resize distort
   filter notch
   name restore_format
   xpos 605
   ypos 223
  }
-push $N1df0c9a0
+push $N1c7fa860
  Copy {
   inputs 2
   from0 rgba.red
@@ -170,7 +182,15 @@ push $N1df0c9a0
   name RES_COMBINED
   tile_color 0xd1b03cff
   xpos 438
-  ypos 383
+  ypos 362
+ }
+ Crop {
+  box {0 0 {Input.width} {Input.height}}
+  reformat true
+  crop false
+  name restore_input_res
+  xpos 438
+  ypos 409
  }
  Expression {
   expr0 "(1.0 / r) - 1.0"
@@ -203,9 +223,9 @@ push $N1df0c9a0
   colorspace_in sRGB
   name sRGB2lin
   xpos 438
-  ypos 730
+  ypos 728
  }
-set N21dc18d0 [stack 0]
+set Nd7fd66b0 [stack 0]
  Merge2 {
   inputs 2
   operation divide
@@ -219,8 +239,8 @@ set N21dc18d0 [stack 0]
   xpos 84
   ypos 1055
  }
-push $N1deedbd0
-push $N21dc18d0
+push $N75b6e280
+push $Nd7fd66b0
  Copy {
   inputs 2
   from0 rgba.alpha
