@@ -6,7 +6,7 @@ Gizmo {
  addUserKnob {26 "" l "Local GPU:" T ""}
  addUserKnob {41 useGPUIfAvailable l "Use GPU if available" -STARTLINE T RES_COMBINED.useGPUIfAvailable}
  addUserKnob {26 ""}
- addUserKnob {41 shader_output l "Shader Output" t "Channel through which the shader will come out, so that it can later be combined with the albedo." T Copy3.to0}
+ addUserKnob {41 shading_output l "Shading Output" t "Channel through which the shading will come out, so that it can later be combined with the albedo." T Copy3.to0}
  addUserKnob {20 about l About}
  addUserKnob {26 _name l "" +STARTLINE T "<b>Intrinsic</b> v1.1<br><br><b>Francisco Contreras</b> - Senior Compositor<br><a href=\"http://vinavfx.com\"><span style=\"color:#C8C8C8;\">vinavfx.com</span></a>"}
  addUserKnob {26 ""}
@@ -27,9 +27,9 @@ Gizmo {
  }
  BackdropNode {
   inputs 0
-  name SHADER_BD
+  name SHADING_BD
   tile_color 0x275b8201
-  label "<font face=\"Bitstream Vera Sans\" size=4>SHADER</font>"
+  label "<font face=\"Bitstream Vera Sans\" size=4>SHADING</font>"
   note_font_size 20
   xpos 18
   ypos 931
