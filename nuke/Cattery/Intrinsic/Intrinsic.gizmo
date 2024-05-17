@@ -1,14 +1,15 @@
 #! /opt/Nuke14.0v7/libnuke-14.0.7.so -nx
-version 14.0 v7
 Gizmo {
- onCreate "def exe(func, *args):\n    allowed_knobs = \['Boolean_Knob', 'PyScript_Knob']\n    exclude_knobs = \['selected']\n\n    knob = nuke.thisKnob()\n    allowed_knob = knob.Class() in allowed_knobs and not knob.name() in exclude_knobs\n\n    try:\n        return eval(func)(*args)\n    except Exception as e:\n\n        if not allowed_knob:\n            return\n\n        if not 'vina' in str(e):\n            return\n\n        message = 'ask <b>Francisco Contreras</b> for the script <b>\"\{\}\"</b>, since the script for this method is not embedded in the node. Thank you.'.format(\n            func)\n        nuke.message(message)\n"
- addUserKnob {20 controls l Controls}
+ onCreate "inference = nuke.toNode('RES_COMBINED')\nthis\[\"gpuName\"].setValue(inference\[\"gpuName\"].value())"
+ addUserKnob {20 controls l Intrinsic}
  addUserKnob {26 "" l "Local GPU:" T ""}
- addUserKnob {41 useGPUIfAvailable l "Use GPU if available" -STARTLINE T RES_COMBINED.useGPUIfAvailable}
+ addUserKnob {26 gpuName l "" -STARTLINE T "Not available"}
+ addUserKnob {6 useGPUIfAvailable l "Use GPU if available" t "Select this to render on the <b>Local GPU</b>, if available.\n\nYou can select this even if no GPU is currently available on your machine. The GPU will then be used whenever the script is opened on a machine which does have a GPU available. You should also select this if you wish to render from the command line with the <b>--gpu</b> option.\n\nIf this node requires full frames from its inputs, and is therefore unable to reduce its memory overhead, it will fall back to the CPU if an attempt to render a frame on the GPU fails due to lack of memory. When this occurs, a warning message will be printed to the console." +STARTLINE}
+ useGPUIfAvailable true
  addUserKnob {26 ""}
  addUserKnob {41 shading_output l "Shading Output" t "Channel through which the shading will come out, so that it can later be combined with the albedo." T Copy3.to0}
  addUserKnob {20 about l About}
- addUserKnob {26 _name l "" +STARTLINE T "<b>Intrinsic</b> v1.1<br><br><b>Francisco Contreras</b> - Senior Compositor<br><a href=\"http://vinavfx.com\"><span style=\"color:#C8C8C8;\">vinavfx.com</span></a>"}
+ addUserKnob {26 _name l "" +STARTLINE T "<b>Intrinsic</b> v1.2<br><br><b>Francisco Contreras</b> - Senior Compositor<br><a href=\"http://vinavfx.com\"><span style=\"color:#C8C8C8;\">vinavfx.com</span></a>"}
  addUserKnob {26 ""}
 }
  BackdropNode {
@@ -51,7 +52,7 @@ Gizmo {
   xpos 438
   ypos -170
  }
-set N1c89be30 [stack 0]
+set N98ce700 [stack 0]
  Dot {
   name Dot6
   xpos 118
@@ -68,21 +69,21 @@ set N1c89be30 [stack 0]
   xpos 84
   ypos 686
  }
-set N6e321a00 [stack 0]
+set N98d18b0 [stack 0]
  Dot {
   name Dot7
   xpos 118
   ypos 863
  }
-set N75b6e280 [stack 0]
-push $N6e321a00
+set N9958280 [stack 0]
+push $N98d18b0
  Colorspace {
   colorspace_out sRGB
   name lin2sRGB
   xpos 231
   ypos 686
  }
-push $N1c89be30
+push $N98ce700
  Reformat {
   type "to box"
   box_width {{"ceil(input0.width / 32) * 32"}}
@@ -91,7 +92,6 @@ push $N1c89be30
   resize none
   center false
   name res_optimal
-  selected true
   xpos 438
   ypos -84
  }
@@ -107,14 +107,14 @@ push $N1c89be30
   xpos 472
   ypos 67
  }
-set N1c7fa860 [stack 0]
+set N47441730 [stack 0]
  Dot {
   name Dot3
   xpos 267
   ypos 67
  }
  Inference {
-  useGPUIfAvailable {{parent.RES_COMBINED.useGPUIfAvailable}}
+  useGPUIfAvailable {{parent.useGPUIfAvailable}}
   modelFile "\[lsearch -inline \[plugins -all ORDINAL.cat] *.cat]"
   serialiseKnob {}
   name HIRES_ORDINAL
@@ -122,7 +122,7 @@ set N1c7fa860 [stack 0]
   xpos 233
   ypos 297
  }
-push $N1c7fa860
+push $N47441730
  Dot {
   name Dot5
   xpos 639
@@ -140,7 +140,7 @@ push $N1c7fa860
   ypos 144
  }
  Inference {
-  useGPUIfAvailable {{parent.RES_COMBINED.useGPUIfAvailable}}
+  useGPUIfAvailable {{parent.useGPUIfAvailable}}
   modelFile "\[lsearch -inline \[plugins -all ORDINAL.cat] *.cat]"
   serialiseKnob {}
   name LOWRES_ORDINAL
@@ -159,7 +159,7 @@ push $N1c7fa860
   xpos 605
   ypos 223
  }
-push $N1c7fa860
+push $N47441730
  Copy {
   inputs 2
   from0 rgba.red
@@ -177,6 +177,7 @@ push $N1c7fa860
   ypos 291
  }
  Inference {
+  useGPUIfAvailable {{parent.useGPUIfAvailable}}
   modelFile "\[lsearch -inline \[plugins -all COMBINE.cat] *.cat]"
   serialiseKnob {}
   name RES_COMBINED
@@ -225,7 +226,7 @@ push $N1c7fa860
   xpos 438
   ypos 728
  }
-set Nd7fd66b0 [stack 0]
+set N46abbaf0 [stack 0]
  Merge2 {
   inputs 2
   operation divide
@@ -239,8 +240,8 @@ set Nd7fd66b0 [stack 0]
   xpos 84
   ypos 1055
  }
-push $N75b6e280
-push $Nd7fd66b0
+push $N9958280
+push $N46abbaf0
  Copy {
   inputs 2
   from0 rgba.alpha
