@@ -1,6 +1,6 @@
 #! /opt/Nuke14.0v7/libnuke-14.0.7.so -nx
 Gizmo {
- onCreate "inference = nuke.toNode('RES_COMBINED')\nthis\[\"gpuName\"].setValue(inference\[\"gpuName\"].value())"
+ onCreate "inference = nuke.toNode('RES_COMBINED')\nnuke.thisNode()\[\"gpuName\"].setValue(inference\[\"gpuName\"].value())"
  addUserKnob {20 controls l Intrinsic}
  addUserKnob {26 "" l "Local GPU:" T ""}
  addUserKnob {26 gpuName l "" -STARTLINE T "Not available"}
